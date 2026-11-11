@@ -1,0 +1,941 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#101827">
+<title>Jayden Calculator 6.0</title>
+
+<style>
+:root {
+  --bg: #101827;
+  --panel: #172338;
+  --panel2: #20324a;
+  --text: #f4f7fb;
+  --muted: #9aacc3;
+  --accent: #55d6c2;
+  --purple: #9a8cff;
+  --operator: #263c55;
+  --danger: #543344;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  padding: 18px;
+  color: var(--text);
+  font-family: Inter, system-ui, sans-serif;
+  background:
+    radial-gradient(ellipse at 15% 10%, #263d5c, transparent 38%),
+    radial-gradient(ellipse at 90% 90%, #29244e, transparent 34%),
+    var(--bg);
+}
+
+.calculator {
+  width: min(100%, 410px);
+  padding: 21px;
+  border: 1px solid #ffffff18;
+  border-radius: 28px;
+  background: linear-gradient(145deg, #1b2a40, #121e31);
+  box-shadow: 0 24px 70px #050b16aa;
+}
+
+.top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.brand {
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: .16em;
+}
+
+.version {
+  color: var(--accent);
+  border: 1px solid #55d6c255;
+  border-radius: 30px;
+  padding: 5px 9px;
+  font-size: 11px;
+}
+
+.display {
+  background: #0c1626;
+  border: 1px solid #ffffff12;
+  border-radius: 19px;
+  padding: 17px 15px;
+  min-height: 130px;
+  margin-bottom: 13px;
+}
+
+.display-label {
+  color: var(--muted);
+  font-size: 10px;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+}
+
+.expression-display {
+  width: 100%;
+  min-height: 44px;
+  margin-top: 13px;
+  color: #eaf2ff;
+  text-align: right;
+  font-size: clamp(22px, 6vw, 30px);
+  font-weight: 500;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+  cursor: default;
+}
+
+.result-line {
+  display: flex;
+  justify-content: space-between;
+  align-items: end;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.result-label {
+  color: var(--muted);
+  font-size: 10px;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+}
+
+#result {
+  color: var(--accent);
+  font-size: clamp(25px, 7vw, 34px);
+  font-weight: 750;
+  text-align: right;
+  overflow-wrap: anywhere;
+}
+
+.status {
+  min-height: 17px;
+  margin: 8px 2px 10px;
+  color: #f0a9b8;
+  font-size: 11px;
+  text-align: right;
+}
+
+.tools {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.keys {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 9px;
+}
+
+button {
+  min-width: 0;
+  min-height: 49px;
+  border: 1px solid #ffffff0d;
+  border-radius: 14px;
+  padding: 12px 4px;
+  color: var(--text);
+  background: var(--panel2);
+  font-size: 16px;
+  font-weight: 650;
+  cursor: pointer;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  transition: transform .12s ease, filter .12s ease;
+}
+
+button:hover {
+  filter: brightness(1.16);
+}
+
+button:active {
+  transform: scale(.95);
+}
+
+button:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.tools button {
+  min-height: 42px;
+  padding: 9px 2px;
+  font-size: 12px;
+  background: #20324a;
+}
+
+.operator {
+  color: #b9d9f3;
+  background: var(--operator);
+}
+
+.clear {
+  color: #ffdce5;
+  background: var(--danger);
+}
+
+.equals {
+  color: #082126;
+  background: linear-gradient(135deg, #42bfae, #55d6c2);
+}
+
+.wide {
+  grid-column: span 2;
+}
+
+.footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  margin-top: 15px;
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.footer button {
+  min-height: 34px;
+  padding: 7px 10px;
+  font-size: 11px;
+  background: #22334b;
+}
+
+@media(max-width: 380px) {
+  .calculator {
+    padding: 14px;
+    border-radius: 23px;
+  }
+
+  .keys {
+    gap: 7px;
+  }
+
+  .tools {
+    gap: 6px;
+  }
+
+  button {
+    min-height: 45px;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<main class="calculator">
+
+  <header class="top">
+    <div class="brand">JAYDEN CALCULATOR</div>
+    <div class="version">VERSION 6.0</div>
+  </header>
+
+  <section class="display">
+
+    <div class="display-label">Expression</div>
+
+    <div
+      id="expression"
+      class="expression-display"
+      aria-label="Mathematical expression"
+      aria-live="polite"
+    >0</div>
+
+    <div class="result-line">
+      <span class="result-label">Result</span>
+      <output id="result">0</output>
+    </div>
+
+  </section>
+
+  <div id="status" class="status" role="status"
+       aria-live="polite"></div>
+
+  <section class="tools" aria-label="Scientific functions">
+
+    <button data-insert="sin(">sin</button>
+    <button data-insert="cos(">cos</button>
+    <button data-insert="tan(">tan</button>
+    <button data-insert="sqrt(">√</button>
+    <button data-insert="^">xʸ</button>
+
+    <button data-insert="log(">log</button>
+    <button data-insert="ln(">ln</button>
+    <button data-insert="pi">π</button>
+    <button data-insert="e">e</button>
+    <button id="angle">DEG</button>
+
+  </section>
+
+  <section class="keys" aria-label="Calculator keypad">
+
+    <button class="clear" data-action="clear">AC</button>
+    <button class="operator" data-insert="(">(</button>
+    <button class="operator" data-insert=")">)</button>
+    <button class="operator" data-insert="/">÷</button>
+
+    <button data-insert="7">7</button>
+    <button data-insert="8">8</button>
+    <button data-insert="9">9</button>
+    <button class="operator" data-insert="*">×</button>
+
+    <button data-insert="4">4</button>
+    <button data-insert="5">5</button>
+    <button data-insert="6">6</button>
+    <button class="operator" data-insert="-">−</button>
+
+    <button data-insert="1">1</button>
+    <button data-insert="2">2</button>
+    <button data-insert="3">3</button>
+    <button class="operator" data-insert="+">+</button>
+
+    <button data-action="backspace">⌫</button>
+    <button data-insert="0">0</button>
+    <button data-insert=".">.</button>
+    <button class="equals" data-action="calculate">=</button>
+
+    <button class="wide operator" data-insert="Ans">Ans</button>
+    <button class="wide operator" data-insert="%">%</button>
+
+    <button class="wide operator" data-insert="!">x!</button>
+    <button class="wide operator" data-insert="abs(">abs</button>
+
+  </section>
+
+  <footer class="footer">
+    <span>Built-in keypad · No eval()</span>
+    <button data-action="copy">Copy result</button>
+  </footer>
+
+</main>
+
+<script>
+"use strict";
+
+const expressionDisplay =
+  document.getElementById("expression");
+
+const output =
+  document.getElementById("result");
+
+const status =
+  document.getElementById("status");
+
+const angleButton =
+  document.getElementById("angle");
+
+let expression = "";
+let angleMode = "DEG";
+let answer = 0;
+let lastResult = null;
+
+
+// DISPLAY
+function renderExpression() {
+  expressionDisplay.textContent = expression || "0";
+}
+
+
+// INSERT VALUES
+function insert(value) {
+
+  if (expression.length > 240) {
+    status.textContent = "Expression is too long.";
+    return;
+  }
+
+  expression += value;
+
+  lastResult = null;
+  output.textContent = "—";
+  status.textContent = "";
+
+  renderExpression();
+}
+
+
+// CLEAR
+function clearExpression() {
+
+  expression = "";
+  lastResult = null;
+
+  output.textContent = "0";
+  status.textContent = "";
+
+  renderExpression();
+}
+
+
+// BACKSPACE
+function backspace() {
+
+  expression = expression.slice(0, -1);
+
+  lastResult = null;
+
+  output.textContent = expression ? "—" : "0";
+  status.textContent = "";
+
+  renderExpression();
+}
+
+
+// TOKENIZER
+function tokenize(source) {
+
+  const s = source
+    .replaceAll("×", "*")
+    .replaceAll("÷", "/")
+    .replaceAll("−", "-");
+
+  const tokens = [];
+  let i = 0;
+
+  while (i < s.length) {
+
+    if (/\s/.test(s[i])) {
+      i++;
+      continue;
+    }
+
+    const rest = s.slice(i);
+
+    const number = rest.match(
+      /^(?:\d+(?:\.\d*)?|\.\d+)(?:[eE][+-]?\d+)?/
+    );
+
+    if (number) {
+
+      tokens.push({
+        type: "number",
+        value: Number(number[0])
+      });
+
+      i += number[0].length;
+      continue;
+    }
+
+    const word = rest.match(/^[A-Za-z]+/);
+
+    if (word) {
+
+      tokens.push({
+        type: "name",
+        value: word[0].toLowerCase()
+      });
+
+      i += word[0].length;
+      continue;
+    }
+
+    if ("+-*/^()%!".includes(s[i])) {
+
+      tokens.push({
+        type: "op",
+        value: s[i]
+      });
+
+      i++;
+      continue;
+    }
+
+    throw Error("Unsupported character: " + s[i]);
+  }
+
+  if (tokens.length > 250) {
+    throw Error("Expression is too long.");
+  }
+
+  return tokens;
+}
+
+
+// MATHEMATICAL PARSER
+function parse(source) {
+
+  const tokens = tokenize(source);
+
+  let position = 0;
+  let depth = 0;
+
+  const peek = () => tokens[position];
+
+  const take = () => tokens[position++];
+
+  const match = value => {
+
+    if (peek()?.value === value) {
+      position++;
+      return true;
+    }
+
+    return false;
+  };
+
+  const expect = value => {
+
+    if (!match(value)) {
+      throw Error("Expected '" + value + "'.");
+    }
+  };
+
+
+  function primary() {
+
+    depth++;
+
+    if (depth > 40) {
+      throw Error("Expression is nested too deeply.");
+    }
+
+    const token = take();
+
+    if (!token) {
+      throw Error("Incomplete expression.");
+    }
+
+    let value;
+
+    if (token.type === "number") {
+
+      value = token.value;
+
+    } else if (
+      token.type === "op" &&
+      token.value === "("
+    ) {
+
+      value = expression();
+      expect(")");
+
+    } else if (token.type === "name") {
+
+      const name = token.value;
+
+      if (name === "pi") {
+
+        value = Math.PI;
+
+      } else if (name === "e") {
+
+        value = Math.E;
+
+      } else if (name === "ans") {
+
+        value = answer;
+
+      } else if (
+        ["sin", "cos", "tan", "sqrt",
+         "log", "ln", "abs"].includes(name)
+      ) {
+
+        expect("(");
+
+        const x = expression();
+
+        expect(")");
+
+        if (
+          name === "sin" ||
+          name === "cos" ||
+          name === "tan"
+        ) {
+
+          const angle =
+            angleMode === "DEG"
+              ? x * Math.PI / 180
+              : x;
+
+          value = Math[name](angle);
+
+        } else if (name === "sqrt") {
+
+          if (x < 0) {
+            throw Error("Square root needs a non-negative number.");
+          }
+
+          value = Math.sqrt(x);
+
+        } else if (name === "log" || name === "ln") {
+
+          if (x <= 0) {
+            throw Error("Logarithms need a positive number.");
+          }
+
+          value = name === "log"
+            ? Math.log10(x)
+            : Math.log(x);
+
+        } else {
+
+          value = Math.abs(x);
+        }
+
+      } else {
+
+        throw Error("Unknown function or constant: " + name);
+      }
+
+    } else {
+
+      throw Error("Check the expression.");
+    }
+
+    depth--;
+
+    return value;
+  }
+
+
+  // POWER: RIGHT ASSOCIATIVE
+  function power() {
+
+    let x = primary();
+
+    if (match("^")) {
+      x = Math.pow(x, unary());
+    }
+
+    return x;
+  }
+
+
+  // UNARY OPERATORS
+  function unary() {
+
+    if (match("+")) return unary();
+
+    if (match("-")) return -unary();
+
+    return power();
+  }
+
+
+  // FACTORIAL AND PERCENTAGE
+  function postfix() {
+
+    let x = unary();
+
+    while (true) {
+
+      if (match("%")) {
+
+        x /= 100;
+
+      } else if (match("!")) {
+
+        if (
+          !Number.isInteger(x) ||
+          x < 0 ||
+          x > 170
+        ) {
+
+          throw Error(
+            "Factorial requires a whole number from 0 to 170."
+          );
+        }
+
+        let result = 1;
+
+        for (let i = 2; i <= x; i++) {
+          result *= i;
+        }
+
+        x = result;
+
+      } else {
+
+        break;
+      }
+    }
+
+    return x;
+  }
+
+
+  // MULTIPLICATION AND DIVISION
+  function term() {
+
+    let x = postfix();
+
+    while (
+      peek() &&
+      (
+        peek().value === "*" ||
+        peek().value === "/"
+      )
+    ) {
+
+      const operator = take().value;
+      const y = postfix();
+
+      if (operator === "/" && y === 0) {
+        throw Error("Cannot divide by zero.");
+      }
+
+      x = operator === "*"
+        ? x * y
+        : x / y;
+    }
+
+    return x;
+  }
+
+
+  // ADDITION AND SUBTRACTION
+  function expressionParser() {
+
+    let x = term();
+
+    while (
+      peek() &&
+      (
+        peek().value === "+" ||
+        peek().value === "-"
+      )
+    ) {
+
+      const operator = take().value;
+      const y = term();
+
+      x = operator === "+"
+        ? x + y
+        : x - y;
+    }
+
+    return x;
+  }
+
+
+  // Parser entry point
+  function expression() {
+    return expressionParser();
+  }
+
+
+  if (tokens.length === 0) {
+    throw Error("Enter an expression first.");
+  }
+
+  const result = expression();
+
+  if (position !== tokens.length) {
+    throw Error("Check the operators and brackets.");
+  }
+
+  if (!Number.isFinite(result)) {
+    throw Error("Result is outside the supported range.");
+  }
+
+  return result;
+}
+
+
+// CALCULATE
+function calculate() {
+
+  try {
+
+    const value = parse(expression);
+
+    answer = value;
+    lastResult = value;
+
+    output.textContent =
+      Number(value.toPrecision(12)).toString();
+
+    status.textContent = "";
+
+    return value;
+
+  } catch (error) {
+
+    lastResult = null;
+    output.textContent = "—";
+    status.textContent = error.message;
+
+    return null;
+  }
+}
+
+
+// BUTTON EVENTS
+document.querySelectorAll("[data-insert]")
+  .forEach(button => {
+
+    button.addEventListener("click", () => {
+      insert(button.dataset.insert);
+    });
+
+  });
+
+
+document.querySelectorAll("[data-action]")
+  .forEach(button => {
+
+    button.addEventListener("click", () => {
+
+      const action = button.dataset.action;
+
+      if (action === "clear") {
+        clearExpression();
+      }
+
+      if (action === "backspace") {
+        backspace();
+      }
+
+      if (action === "calculate") {
+        calculate();
+      }
+
+      if (action === "copy" && lastResult !== null) {
+
+        if (!navigator.clipboard) {
+          status.textContent =
+            "Clipboard unavailable in this browser.";
+          return;
+        }
+
+        navigator.clipboard.writeText(String(lastResult))
+          .then(() => {
+            status.textContent = "Result copied.";
+          })
+          .catch(() => {
+            status.textContent = "Copy failed.";
+          });
+      }
+
+    });
+
+  });
+
+
+// DEGREE / RADIAN SWITCH
+angleButton.addEventListener("click", () => {
+
+  angleMode =
+    angleMode === "DEG" ? "RAD" : "DEG";
+
+  angleButton.textContent = angleMode;
+
+});
+
+
+// COMPUTER KEYBOARD SUPPORT
+// No mobile text input is used.
+document.addEventListener("keydown", event => {
+
+  if (/^[0-9.]$/.test(event.key)) {
+    insert(event.key);
+    return;
+  }
+
+  const keys = {
+    "+": "+",
+    "-": "-",
+    "*": "*",
+    "/": "/",
+    "^": "^",
+    "(": "(",
+    ")": ")",
+    "%": "%",
+    "!": "!"
+  };
+
+  if (keys[event.key]) {
+    event.preventDefault();
+    insert(keys[event.key]);
+    return;
+  }
+
+  if (event.key === "Enter" || event.key === "=") {
+    event.preventDefault();
+    calculate();
+  }
+
+  if (event.key === "Backspace") {
+    event.preventDefault();
+    backspace();
+  }
+
+  if (event.key === "Escape") {
+    clearExpression();
+  }
+
+});
+
+
+// SELF TESTS
+const tests = [
+  ["2+3*4", 14],
+  ["(2+3)*4", 20],
+  ["2^3^2", 512],
+  ["-2^2", -4],
+  ["sqrt(81)", 9],
+  ["sin(30)", 0.5],
+  ["cos(60)", 0.5],
+  ["log(100)", 2],
+  ["ln(e)", 1],
+  ["5!", 120],
+  ["50%", 0.5],
+  ["2^3", 8],
+  ["1e3+2", 1002],
+  ["abs(-7)", 7]
+];
+
+function runChecks() {
+
+  const previousMode = angleMode;
+
+  angleMode = "DEG";
+
+  let passed = 0;
+
+  for (const [input, expected] of tests) {
+
+    try {
+
+      const actual = parse(input);
+
+      if (Math.abs(actual - expected) < 1e-9) {
+        passed++;
+      }
+
+    } catch (error) {
+      // Failed checks remain uncounted.
+    }
+  }
+
+  angleMode = previousMode;
+
+  return passed + "/" + tests.length + " checks passed";
+}
+
+console.info(
+  "Jayden Calculator 6.0:",
+  runChecks()
+);
+
+renderExpression();
+
+</script>
+
+</body>
+</html>
